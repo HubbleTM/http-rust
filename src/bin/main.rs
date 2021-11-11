@@ -1,22 +1,26 @@
 use std::net::{TcpListener, TcpStream};
 use std::io::{Read, Write};
 use std::fs;
+use http::ThreadPool;
+use std::sync::mpsc;
 
 const ADDRESS: &str = "127.0.0.1:8080";
 const BUFF_SZ: usize = 1024;
 
 fn main() {
     let listener = TcpListener::bind(ADDRESS).unwrap();
+    let pool = ThreadPool::new(10);
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
-        handler(stream);
+        pool.execute(Box::new(|| {
+            handler(stream);
+        }));
     }
 }
 
 fn handler(mut stream: TcpStream) {
     let request = read_request(&mut stream);
-    println!("Request: {}", request);
     write_response(&mut stream);
 }
 

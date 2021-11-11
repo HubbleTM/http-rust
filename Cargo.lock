@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "http-svc"
+name = "http"
 version = "0.1.0"
